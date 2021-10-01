@@ -1,82 +1,80 @@
 class Model {
     constructor() {}
-  }
+
+    /**
+     * Метод добавления компонента приложения в главный модуль
+     * 
+     * @param component - компонент приложения
+     * @param name - имя компонента
+     */
+    addComponent(component, name){
+        this[name] = component;
+    }
+}
   
-  class View {
+class View {
     constructor() {
+        //определение корневого тега
         this.app = document.querySelector('#root');
+        //массив промисов
         this.promises = [];
     }
 
-    createElement(tag, className) {
-        const element = document.createElement(tag)
-        if (className) element.classList.add(className)
-    
-        return element
-    }
-
-    getElement(selector) {
-        return this.app.querySelector(selector)
-    }
-
+    /**
+     * Рендер приложения
+     * 
+     * @param {Model} model - модель приложения
+     */
     async render(model){
-        this.app.append(model.loading.view.outlet);
-        this.app.append(model.filter.view.outlet);
-        this.app.append(model.table.view.outlet);
+        this.app.append(model.loading.view.outlet); //представление loading
+        this.app.append(model.filter.view.outlet); // представление filter
+        this.app.append(model.table.view.outlet); // представление table
 
-        await this.promises[0];
-        model.table.renderUsers();
+        await Promise.all(this.promises); //ожидание выполнения всех промисов(загрузки данных)
+        model.table.renderUsers(); //рендер пользователей
+
+        model.loading.view.hide(); //сокрытие загрузочного круга
         
-        model.filter.bindChange(model.table.getFilterHandler());
-        model.filter.bindReset(model.table.getResetHandler());
-
-        model.loading.view.outlet.style.display = "none";
+        //операции присваивания обработчиков событий
+        model.filter.bindChange(model.table.getFilterHandler(), model.table.getResetHandler());
+        model.filter.bindReset(model.table.getResetHandler()); 
     }
-
-    refreshTable(){
-        this.app.table.refresh();
-    }
-  }
+}
   
-  class Controller {
+class Controller {
     constructor(model, view) {
       this.model = model;
       this.view = view;
     }
 
-    addComponent(component, asyncBool){
-        this.view.promises.push(component.promise);
-        this.model.addComponent(component)
+    /**
+     * Метод добавления компонента приложения в главный модуль
+     * 
+     * @param component - компонент приложения
+     * @param name - имя компонента
+     * @see {@link View.addComponent}
+     */
+    addComponent(component, name){
+        this.view.promises.push(component.promise); //добавление промисов в массив
+        this.model.addComponent(component, name) // добавление компонента в модель приложения
     }
 
-    addFilter(filter){
-        this.model.filter = filter;
-    }
-
-    addTable(table){
-        this.model.table = table;
-        this.view.promises.push(table.model.promise);
-    }
-
-    addLoading(loading){
-        this.model.loading = loading;
-    }
-
+    /**
+     * Рендер приложения
+     * 
+     * @see {@link View.render}
+     */
     render(){
         this.view.render(this.model);
     }
-
-    refreshTable(){
-        this.view.refreshTable();
-    }
-  }
+}
   
-  const app = new Controller(new Model(), new View())
-    
-  app.addLoading(loading_component);
-  app.addFilter(filter_component);
-  app.addTable(table_component, true);
+const app = new Controller(new Model(), new View())
 
-  app.render();
+app.addComponent(loading_component, 'loading');
+app.addComponent(filter_component, 'filter');
+app.addComponent(table_component, 'table');
+
+app.render();
 
   

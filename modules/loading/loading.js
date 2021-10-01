@@ -4,13 +4,16 @@ class LoadingModel {
 
 class LoadingView {
     constructor() {
+        //Загрузка шаблона
         this.promise = xhrFunc('loading', 'html').then(v => this.outlet = v);
     }
 
+    /**
+     * Спрятать загрузочный круг
+     * 
+     */
     hide(){
-        console.log(this.outlet);
-        this.outlet.style.display = 'hide';
-        console.log(this.outlet.style);
+        this.outlet.style.display = 'none';
     }
 }
 
@@ -18,6 +21,8 @@ class LoadingController {
     constructor(model, view) {
         this.model = model;
         this.view = view;
+
+        this.promise = view.promise;
     }
 }
   
