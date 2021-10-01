@@ -1,16 +1,11 @@
 class Model {
-    constructor() {
-        this.components = [];
-    }
-
-    addComponent(component){
-        this.components.push(component);
-    }
+    constructor() {}
   }
   
   class View {
     constructor() {
-        this.app = this.getElement('#root');
+        this.app = document.querySelector('#root');
+        this.promises = [];
     }
 
     createElement(tag, className) {
@@ -21,38 +16,77 @@ class Model {
     }
 
     getElement(selector) {
-        const element = document.querySelector(selector)
-    
-        return element
+        return this.app.querySelector(selector)
     }
 
-    render(components){
-        for(let i = 0; i < components.length; i++){
-            this.app.append(components[i].view.app);
-        }
+    async render(model){
+        this.app.append(model.loading.view.outlet);
+        // model.loading.view.outlet = this.app.querySelector('#loading');
+        
+        // await Promise.all(this.promises);
+        await this.promises[0];
+        model.table.renderUsers();
+        // model.filter.bindChange();
+        model.filter.bindChange(model.table.getFilterHandler());
+        model.filter.bindReset(model.table.getResetHandler());
+        // console.log(this.promises[0]);
+
+        this.app.append(model.filter.view.outlet);
+        this.app.append(model.table.view.outlet);
+
+        // model.filter.view.outlet = this.app.querySelector('#filter');
+        // model.table.view.outlet = this.app.querySelector('#table');
+
+        model.loading.view.outlet.style.display = "none";
+
+        // setTimeout(()=>{
+        //     this.app.append(model.table.view.outlet.cloneNode(true));
+        // }, 2000)
+    }
+
+    refreshTable(){
+        this.app.table.refresh();
     }
   }
   
   class Controller {
     constructor(model, view) {
-      this.model = model
-      this.view = view
+      this.model = model;
+      this.view = view;
     }
 
-    addComponent(component){
+    addComponent(component, asyncBool){
+        this.view.promises.push(component.promise);
         this.model.addComponent(component)
     }
 
+    addFilter(filter){
+        this.model.filter = filter;
+    }
+
+    addTable(table){
+        this.model.table = table;
+        this.view.promises.push(table.model.promise);
+    }
+
+    addLoading(loading){
+        this.model.loading = loading;
+    }
+
     render(){
-        this.view.render(this.model.components);
+        this.view.render(this.model);
+    }
+
+    refreshTable(){
+        this.view.refreshTable();
     }
   }
   
   const app = new Controller(new Model(), new View())
-
-  app.addComponent(loading_component);
-  app.addComponent(filter_component);
-  app.addComponent(table_component);
+    
+  app.addLoading(loading_component);
+  app.addFilter(filter_component);
+  app.addTable(table_component, true);
 
   app.render();
 
