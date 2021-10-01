@@ -1,3 +1,7 @@
 @import url(modules/loading/loading.css);
 @import url(modules/filter/filter.css);
 @import url(modules/table/table.css);
+
+html{
+    font-family: 'Noto Sans Display', sans-serif;
+}

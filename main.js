@@ -21,27 +21,16 @@ class Model {
 
     async render(model){
         this.app.append(model.loading.view.outlet);
-        // model.loading.view.outlet = this.app.querySelector('#loading');
-        
-        // await Promise.all(this.promises);
-        await this.promises[0];
-        model.table.renderUsers();
-        // model.filter.bindChange();
-        model.filter.bindChange(model.table.getFilterHandler());
-        model.filter.bindReset(model.table.getResetHandler());
-        // console.log(this.promises[0]);
-
         this.app.append(model.filter.view.outlet);
         this.app.append(model.table.view.outlet);
 
-        // model.filter.view.outlet = this.app.querySelector('#filter');
-        // model.table.view.outlet = this.app.querySelector('#table');
+        await this.promises[0];
+        model.table.renderUsers();
+        
+        model.filter.bindChange(model.table.getFilterHandler());
+        model.filter.bindReset(model.table.getResetHandler());
 
         model.loading.view.outlet.style.display = "none";
-
-        // setTimeout(()=>{
-        //     this.app.append(model.table.view.outlet.cloneNode(true));
-        // }, 2000)
     }
 
     refreshTable(){

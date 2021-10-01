@@ -2,12 +2,11 @@ class TableModel {
     constructor() {
         this.promise = xhrFuncData('', 'data').then(v => {
             this.data = v;
-            // console.log(this.data);
+            console.log(v);
             this.names = [];
             for(let i = 0; i < this.data.results.length; i++){
                 this.names.push({id: i, name: this.data.results[i].name});
             }
-            // console.log(this.names);
         })
     }
 }
@@ -19,15 +18,20 @@ class TableView {
             this.table = this.outlet.querySelector('table');
             this.columns = [['Name', 'Picture', 'Location', 'Email', 'Phone', 'Registered Date'],
             ['name>first+last', 'picture>thumbnail+large', 'location>state+city', 'email', 'phone', 'registered>date']];
+            let thead = this.createElement('thead');
             let headers = this.createElement('tr', 'headers');
             for(let col of this.columns[0]){
                 let header = this.createElement('th', col.replace(/\s+/g, ''));
                 header.textContent = col;
                 headers.append(header);
             }
-            // console.log(headers);
-            this.table.append(headers);
-            this.headers = this.table.querySelector('.headers');
+            thead.append(headers);
+            this.table.append(thead);
+            this.thead = this.table.querySelector('thead');
+
+            let tbody = this.createElement('tbody');
+            this.table.append(tbody);
+            this.tbody = this.table.querySelector('tbody');
         }); 
 
         this.error = this.createElement('span', 'error');
@@ -40,12 +44,10 @@ class TableView {
             if(sptCol.length > 1){
                 sptCol[1] = sptCol[1].split("+");
             }
-            // console.log(sptCol);
             return sptCol;
         }
 
         function dataChoose(sptCol, user){
-            // console.log(user);
             let extractedData = user[sptCol[0]];
             if(sptCol.length > 1){
                 extractedData = "";
@@ -54,7 +56,6 @@ class TableView {
                     extractedData += " ";
                 }
             }
-            // console.log(extractedData);
             return extractedData;
         }
         
@@ -64,7 +65,6 @@ class TableView {
             let dd = _date[2],
                 mm = _date[1],
                 yyyy = _date[0];
-            // console.log(_date);
             return dd + "." + mm + "." + yyyy;
         }
 
@@ -76,10 +76,8 @@ class TableView {
                     case 1:
                         let img = this.createElement('img', 'tooltip');
                         let tooltip = this.createElement('span');
-                        // let tooltip_img = this.createElement('img');
                         let imgs = dataChoose(colTransform(this.columns[1][1]), user).split(" ");
                         img.src = imgs[0];
-                        // tooltip_img.src = imgs[1];
                         tooltip.style.backgroundImage = "url("+imgs[1]+")"; 
                         td.append(img);
                         td.append(tooltip);
@@ -87,8 +85,6 @@ class TableView {
                     case 5:
                         let date = dataChoose(colTransform(this.columns[1][5]), user);
                         td.textContent = formatDate(date);
-                        // console.log(formatDate(date));
-                        // console.log(date);
                         break;
                     default:
                         td.textContent = dataChoose(colTransform(this.columns[1][i]), user);
@@ -96,18 +92,28 @@ class TableView {
                 }
                 userTr.append(td);
             }
-            // console.log(userTr);
             return userTr;
         }
         
-        this.table.innerHTML = "";
+
+        let content = this.tbody.querySelectorAll('tr');
+        for(let i = 0; i < content.length; i++){
+            if(content[i]){
+                this.tbody.removeChild(content[i]);
+            }
+        }
+        let error = this.tbody.querySelector('.error');
+        if(error){
+            this.tbody.removeChild(error);
+        }
+
 
         if(users.length > 0){
             for(let i = 0; i < users.length; i++){
-                this.table.append(this.getUser(users[i]));
+                this.tbody.append(this.getUser(users[i]));
             }
         }else{
-            this.table.append(this.error);
+            this.tbody.append(this.error);
         }
     }
 
@@ -136,12 +142,12 @@ class TableController {
             let input_names = value.split(" ", 2);
             let firstName = input_names[0];
             let lastName = input_names[1];
-            let fnRegexp = new RegExp(firstName, 'i');
-            let lnRegexp = new RegExp(lastName, 'i');
+            let fnRegexp = firstName ? new RegExp("^"+firstName, 'i') : null;
+            let lnRegexp = lastName != undefined ? new RegExp("^"+lastName, 'i') : null;
             let filteredUsers = model.data.results.filter(user => {
-                return fnRegexp.test(user.name['first']) && lnRegexp.test(user.name['last'])
+                return (fnRegexp ? fnRegexp.test(user.name['first']) : false) && (lnRegexp ? lnRegexp.test(user.name['last']) : true);
             });
-            // console.log(filteredUsers);
+            console.log(firstName, lastName);
             view.renderUsers(filteredUsers);
         }, 1000);
     }
