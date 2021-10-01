@@ -2,7 +2,7 @@ class TableModel {
     constructor() {
         this.promise = xhrFuncData('', 'data').then(v => {
             this.data = v;
-            console.log(this.data);
+            // console.log(this.data);
             this.names = [];
             for(let i = 0; i < this.data.results.length; i++){
                 this.names.push({id: i, name: this.data.results[i].name});
@@ -141,7 +141,7 @@ class TableController {
             let filteredUsers = model.data.results.filter(user => {
                 return fnRegexp.test(user.name['first']) && lnRegexp.test(user.name['last'])
             });
-            console.log(filteredUsers);
+            // console.log(filteredUsers);
             view.renderUsers(filteredUsers);
         }, 1000);
     }
