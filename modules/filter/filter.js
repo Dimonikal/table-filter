@@ -16,15 +16,10 @@ class FilterView {
      * Бинд обработчика события изменения input'a
      * 
      * @param {Function} handlerChange - обработчик изменения
-     * @param {Function} handlerReset - обработчик сброса
      */
-    bindChange(handlerChange, handlerReset) {
+    bindChange(handlerChange) {
         this.input.addEventListener('input', event => {
-            if(this.input.value != ""){
-                handlerChange(event.target.value);
-            }else{
-                handlerReset();
-            }
+            handlerChange(event.target.value);
             // console.log(event.target.value);
         })
     }
@@ -54,11 +49,10 @@ class FilterController {
      * Бинд обработчика события изменения input'a
      * 
      * @param {Function} changeHandler - обработчик изменения
-     * @param {Function} resetHandler - обработчик сброса
      * @see {@link FilterView.bindChange}
      */
-    bindChange(changeHandler, resetHandler){
-        this.view.bindChange(changeHandler, resetHandler);
+    bindChange(changeHandler){
+        this.view.bindChange(changeHandler);
     }
 
     /**

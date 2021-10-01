@@ -185,16 +185,20 @@ class TableController {
  * @see {@link TableView.renderUsers}
  */
         this.filterUsers = new debounce(function(value){
-            let input_names = value.split(" ", 2);
-            let firstName = input_names[0];
-            let lastName = input_names[1];
-            let fnRegexp = firstName ? new RegExp("^"+firstName, 'i') : null;
-            let lnRegexp = lastName != undefined ? new RegExp("^"+lastName, 'i') : null;
-            let filteredUsers = model.data.results.filter(user => {
-                return (fnRegexp ? fnRegexp.test(user.name['first']) : false) && (lnRegexp ? lnRegexp.test(user.name['last']) : true);
-            });
-            // console.log(firstName, lastName);
-            view.renderUsers(filteredUsers);
+            if(value){
+                let input_names = value.split(" ", 2);
+                let firstName = input_names[0];
+                let lastName = input_names[1];
+                let fnRegexp = firstName ? new RegExp("^"+firstName, 'i') : null;
+                let lnRegexp = lastName != undefined ? new RegExp("^"+lastName, 'i') : null;
+                let filteredUsers = model.data.results.filter(user => {
+                    return (fnRegexp ? fnRegexp.test(user.name['first']) : false) && (lnRegexp ? lnRegexp.test(user.name['last']) : true);
+                });
+                // console.log(firstName, lastName);
+                view.renderUsers(filteredUsers);
+            }else{
+                view.renderUsers(model.data.results)
+            }
         }, 1000);
     }
 

@@ -36,7 +36,7 @@ class View {
         model.loading.view.hide(); //сокрытие загрузочного круга
         
         //операции присваивания обработчиков событий
-        model.filter.bindChange(model.table.getFilterHandler(), model.table.getResetHandler());
+        model.filter.bindChange(model.table.getFilterHandler());
         model.filter.bindReset(model.table.getResetHandler()); 
     }
 }
