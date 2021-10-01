@@ -1,0 +1,40 @@
+#table h1{
+    font-size: 3em;
+}
+
+#table table, th, tr, td{
+    border: 1px solid black;
+}
+
+#table table{
+    width: 100%;
+    height: auto;
+}
+
+#table tr{
+    min-height: 20px;
+}
+
+.tooltip {
+	cursor: help;
+}
+
+.tooltip+span{
+	width: 525px;
+    height: 252px;
+	opacity: 0; /* Наш элемент прозрачен... */
+	position: absolute;
+	visibility: hidden; /* ...и скрыт. */
+    background-repeat: no-repeat;
+	transition: all 0.4s ease-in-out; /* Добавить плавности по вкусу */
+}
+		
+.tooltip:hover+span{
+	opacity: 1; /* Показываем его */
+	visibility: visible;
+}
+
+.error{
+    color: red;
+    font-size: 20px;  
+}
