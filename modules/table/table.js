@@ -199,7 +199,7 @@ class TableController {
             }else{
                 view.renderUsers(model.data.results)
             }
-        }, 1000);
+        }, 700);
     }
 
     
